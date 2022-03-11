@@ -1,0 +1,14 @@
+{
+  "name": "yadacoinjs",
+  "version": "1.0.0",
+  "description": "Web 3.0 JavaScript/TypeScript framework for interacting with the YadaCoin blockchain.",
+  "main": "./dist/index.js",
+  "repository": "https://github.com/pdxwebdev/yadacoinjs",
+  "author": "Matthew Vogel",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^17.0.21",
+    "eciesjs": "^0.3.14",
+    "typescript": "^4.6.2"
+  }
+}
