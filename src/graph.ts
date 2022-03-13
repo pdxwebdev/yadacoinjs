@@ -914,7 +914,7 @@ export class Graph {
           contact:  contact,
           identity: identity
         }
-      })))
+      })), '_blank', 'left=100,top=100,width=450,height=500')
     })
   }
 
@@ -929,7 +929,7 @@ export class Graph {
           group:  group,
           identity: identity
         }
-      })))
+      })), '_blank', 'left=100,top=100,width=450,height=500')
     })
   }
 
@@ -943,7 +943,7 @@ export class Graph {
         message: {
           identity: identity
         }
-      })))
+      })), '_blank', 'left=100,top=100,width=450,height=500')
     })
   }
 
@@ -957,7 +957,7 @@ export class Graph {
         message: {
           collections:  collections
         }
-      })))
+      })), '_blank', 'left=100,top=100,width=450,height=500')
     })
   }
 
@@ -969,7 +969,7 @@ export class Graph {
         method: 'sendmail',
         origin: '*',
         message: params
-      })))
+      })), '_blank', 'left=100,top=100,width=450,height=500')
     })
   }
 
@@ -984,7 +984,7 @@ export class Graph {
           identity,
           collection
         }
-      })))
+      })), '_blank', 'left=100,top=100,width=450,height=500')
     })
   }
 

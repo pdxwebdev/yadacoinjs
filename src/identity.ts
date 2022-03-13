@@ -178,7 +178,7 @@ export class Identity {
       this.popup = window.open(this.settings.webServiceURL + '/identity#' + btoa(JSON.stringify({
         method: 'identity',
         origin: '*'
-      })))
+      })), '_blank', 'left=100,top=100,width=450,height=500')
     })
   }
 
@@ -218,9 +218,9 @@ export class Identity {
         this.identityResolve = resolve;
         this.identityReject = reject;
         this.popup = window.open(this.settings.webServiceURL + '/identity#' + btoa(JSON.stringify({
-          "method":"identity",
-          "origin": "*"
-        })))
+          'method':'identity',
+          'origin': '*'
+        })), '_blank', 'left=100,top=100,width=450,height=500')
       })
       .then(() => {
         return fetch(this.settings.webServiceURL + '/challenge', {
@@ -237,13 +237,13 @@ export class Identity {
       })
       .then((data) => {
         this.popup = window.open(this.settings.webServiceURL + '/identity#' + btoa(JSON.stringify({
-          method:"signin",
-          origin: "*",
+          method:'signin',
+          origin: '*',
           message: {
             challenge: data.challenge,
             identity: this.identity
           }
-        })))
+        })), '_blank', 'left=100,top=100,width=450,height=500')
       })
     })
   }
@@ -253,13 +253,13 @@ export class Identity {
       this.getAuthResolve = resolve;
       this.getAuthReject = reject;
       this.popup = window.open(this.settings.webServiceURL + '/identity#' + btoa(JSON.stringify({
-        method:"signin",
-        origin: "*",
+        method:'signin',
+        origin: '*',
         message: {
           challenge: hash,
           identity: this.identity
         }
-      })))
+      })), '_blank', 'left=100,top=100,width=450,height=500')
     })
   }
 }
