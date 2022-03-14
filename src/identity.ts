@@ -59,7 +59,8 @@ export class Identity {
     WEB_SIGNIN_RESPONSE: 'web_signin_response'
   }
   listening: boolean = false
-  constructor() {
+  constructor(settings: Settings) {
+    this.settings = settings
     this.initListener()
   }
 
@@ -114,35 +115,43 @@ export class Identity {
   }
 
   onIdentity(identity: IdentityI.Identity) {
-    // hook
+    this.identityResolve && this.identityResolve(identity)
+    this.popup.close()
   }
 
   onSignIn(signature: string) {
-    // hook
+    this.getAuthResolve && this.getAuthResolve(signature)
+    this.popup.close()
   }
 
   onAddContact() {
-    // hook
+    this.getAuthResolve && this.addContactResolve()
+    this.popup.close()
   }
 
   onAddGroup() {
-    // hook
+    this.getAuthResolve && this.addGroupResolve()
+    this.popup.close()
   }
 
   onGetGraph(graph: GraphI.Graph) {
-    // hook
+    this.getGraphResolve && this.getGraphResolve(graph)
+    this.popup.close()
   }
 
   onGetCollection(graph: GraphI.Graph) {
-    // hook
+    this.getCollectionResolve && this.getCollectionResolve(graph)
+    this.popup.close()
   }
 
   onSendMail() {
-    // hook
+    this.sendMailResolve && this.sendMailResolve()
+    this.popup.close()
   }
 
   onGetMail(graph: GraphI.Graph) {
-    // hook
+    this.getMailResolve && this.getMailResolve(graph)
+    this.popup.close()
   }
 
   reviveUser(wif: string, username: string) {

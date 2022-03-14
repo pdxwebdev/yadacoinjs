@@ -7,7 +7,8 @@ declare var Base64: any;
 
 export class Crypt {
   identity: any;
-  constructor() {
+  constructor(identity: Identity) {
+    this.identity = identity
   }
 
   encrypt(message: string) {

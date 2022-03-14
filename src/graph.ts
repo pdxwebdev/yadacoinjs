@@ -39,7 +39,12 @@ export class Graph {
   crypt: any;
   transaction: any;
   addContactResolve: any;
-  constructor() {
+  constructor(
+    settings: Settings,
+    identity: Identity
+  ) {
+    this.settings = settings
+    this.identity = identity
   }
 
   endpointRequest(endpoint: string, post_data={}) {

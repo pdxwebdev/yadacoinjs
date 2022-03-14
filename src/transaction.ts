@@ -34,9 +34,14 @@ export class Transaction {
     identity: any;
     settings: any;
     crypt: any;
-    constructor() {
-        this.txnattempts = [12, 5, 4];
-        this.cbattempts = [12, 5, 4];
+    constructor(
+      settings: Settings,
+      identity: Identity
+    ) {
+      this.settings = settings
+      this.identity = identity
+      this.txnattempts = [12, 5, 4];
+      this.cbattempts = [12, 5, 4];
     }
 
     generateTransaction(info: GraphI.TxnParams) {
