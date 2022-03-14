@@ -14,9 +14,11 @@
 
 ## Usage
 ```
-const settings = new Settings()
-settings.webServiceURL = 'https://yadacoin.io'  # PUT YOUR NODE URL HERE
-this.identity = new Identity(settings)
-this.graph = new Graph(settings, this.identity)
-const identity = await this.identity.getIdentity()
+(async () => {
+  const settings = new Settings()
+  settings.webServiceURL = 'https://yadacoin.io'  # PUT YOUR NODE URL HERE
+  const identity = new Identity(settings)
+  const graph = new Graph(settings, identity)
+  const user = await identity.getIdentity()
+})
 ```
