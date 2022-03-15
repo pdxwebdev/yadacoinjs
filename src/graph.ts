@@ -908,88 +908,94 @@ export class Graph {
     }
   }
 
-  addContact(contact: any, identity: any) {
+  addContact(contact: any, identity: any, portal: string) {
     return new Promise((resolve, reject) => {
       this.identity.addContactResolve = resolve;
       this.identity.addContactReject = reject;
-      this.identity.popup = window.open(this.settings.webServiceURL + '/identity#' + btoa(JSON.stringify({
+      this.identity.openPortal({
         method: 'addcontact',
         origin: '*',
+        portal,
         message: {
-          contact:  contact,
-          identity: identity
+          contact,
+          identity
         }
-      })), '_blank', 'left=100,top=100,width=450,height=500')
+      })
     })
   }
 
-  addGroup(group: any, identity: any) {
+  addGroup(group: any, identity: any, portal: string) {
     return new Promise((resolve, reject) => {
       this.identity.addGroupResolve = resolve;
       this.identity.addGroupReject = reject;
-      this.identity.popup = window.open(this.settings.webServiceURL + '/identity#' + btoa(JSON.stringify({
+      this.identity.openPortal({
         method: 'addgroup',
         origin: '*',
+        portal,
         message: {
-          group:  group,
-          identity: identity
+          group,
+          identity
         }
-      })), '_blank', 'left=100,top=100,width=450,height=500')
+      })
     })
   }
 
-  getGraph(identity: any) {
+  getGraph(identity: any, portal: string) {
     return new Promise((resolve, reject) => {
       this.identity.getGraphResolve = resolve;
       this.identity.getGraphReject = reject;
-      this.identity.popup = window.open(this.settings.webServiceURL + '/identity#' + btoa(JSON.stringify({
+      this.identity.openPortal({
         method: 'getgraph',
         origin: '*',
+        portal,
         message: {
-          identity: identity
+          identity
         }
-      })), '_blank', 'left=100,top=100,width=450,height=500')
+      })
     })
   }
 
-  getCollection(collections: any[]) {
+  getCollection(collections: any[], portal: string) {
     return new Promise((resolve, reject) => {
       this.identity.getCollectionResolve = resolve;
       this.identity.getCollectionReject = reject;
-      this.identity.popup = window.open(this.settings.webServiceURL + '/identity#' + btoa(JSON.stringify({
+      this.identity.openPortal({
         method: 'collection',
         origin: '*',
+        portal,
         message: {
-          collections:  collections
+          collections
         }
-      })), '_blank', 'left=100,top=100,width=450,height=500')
+      })
     })
   }
 
-  sendMail(params: any) {
+  sendMail(params: any, portal: string) {
     return new Promise((resolve, reject) => {
       this.identity.sendMailResolve = resolve;
       this.identity.sendMailReject = reject;
-      this.identity.popup = window.open(this.settings.webServiceURL + '/identity#' + btoa(JSON.stringify({
+      this.identity.openPortal({
         method: 'sendmail',
         origin: '*',
+        portal,
         message: params
-      })), '_blank', 'left=100,top=100,width=450,height=500')
+      })
     })
   }
 
-  getMail(identity: any, collection: any) {
+  getMail(identity: any, collection: any, portal: string) {
     return new Promise((resolve, reject) => {
       this.identity.getMailResolve = resolve;
       this.identity.getMailReject = reject;
-      this.identity.popup = window.open(this.settings.webServiceURL + '/identity#' + btoa(JSON.stringify({
+      this.identity.openPortal({
         method: 'getmail',
         origin: '*',
+        portal,
         message: {
           identity,
           collection
         }
-      })), '_blank', 'left=100,top=100,width=450,height=500')
+      })
     })
   }
 

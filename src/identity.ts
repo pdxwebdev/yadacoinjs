@@ -69,11 +69,11 @@ export class Identity {
       console.log(event.data)
       if (event.data.method === 'identity') {
         this.identity = event.data.result.identity
-        this.onIdentity(this.identity)
+        this.onIdentity(event.data)
       }
 
       if(event.data.method === 'signin') {
-        this.onSignIn(event.data.result.signature)
+        this.onSignIn(event.data)
         const data = await (await fetch(this.settings.webServiceURL + '/auth', {
           method: 'POST',
           cache: 'no-cache',
@@ -89,69 +89,85 @@ export class Identity {
       }
 
       if(event.data.method === 'addcontact') {
-        this.onAddContact()
+        this.onAddContact(event.data)
       }
 
       if(event.data.method === 'addgroup') {
-        this.onAddGroup()
+        this.onAddGroup(event.data)
       }
 
       if(event.data.method === 'getgraph') {
-        this.onGetGraph(event.data.result.graph)
+        this.onGetGraph(event.data)
       }
 
       if(event.data.method === 'getcollection') {
-        this.onGetCollection(event.data.result.graph)
+        this.onGetCollection(event.data)
       }
 
       if(event.data.method === 'sendmail') {
-        this.onSendMail()
+        this.onSendMail(event.data)
       }
 
       if(event.data.method === 'getmail') {
-        this.onGetMail(event.data.result.graph)
+        this.onGetMail(event.data)
       }
     })
   }
 
-  onIdentity(identity: IdentityI.Identity) {
-    this.identityResolve && this.identityResolve(identity)
-    this.popup.close()
+  onIdentity(data: any) {
+    this.identityResolve && this.identityResolve(data.result.identity)
+    if (data.portal === 'window'){
+      this.popup.close()
+    }
   }
 
-  onSignIn(signature: string) {
-    this.getAuthResolve && this.getAuthResolve(signature)
-    this.popup.close()
+  onSignIn(data: any) {
+    this.getAuthResolve && this.getAuthResolve(data.result.signature)
+    if (data.portal === 'window'){
+      this.popup.close()
+    }
   }
 
-  onAddContact() {
+  onAddContact(data: any) {
     this.getAuthResolve && this.addContactResolve()
-    this.popup.close()
+    if (data.portal === 'window'){
+      this.popup.close()
+    }
   }
 
-  onAddGroup() {
+  onAddGroup(data: any) {
     this.getAuthResolve && this.addGroupResolve()
-    this.popup.close()
+    if (data.portal === 'window'){
+      this.popup.close()
+    }
   }
 
-  onGetGraph(graph: GraphI.Graph) {
-    this.getGraphResolve && this.getGraphResolve(graph)
-    this.popup.close()
+  onGetGraph(data: any) {
+    this.getGraphResolve && this.getGraphResolve(data.result.graph)
+    if (data.portal === 'window'){
+      this.popup.close()
+    }
   }
 
-  onGetCollection(graph: GraphI.Graph) {
-    this.getCollectionResolve && this.getCollectionResolve(graph)
-    this.popup.close()
+  onGetCollection(data: any) {
+    this.getCollectionResolve && this.getCollectionResolve(data.result.graph)
+    if (data.portal === 'window'){
+      this.popup.close()
+    }
   }
 
-  onSendMail() {
+  onSendMail(data: any) {
     this.sendMailResolve && this.sendMailResolve()
-    this.popup.close()
+    if (data.portal === 'window'){
+      this.popup.close()
+    }
   }
 
-  onGetMail(graph: GraphI.Graph) {
-    this.getMailResolve && this.getMailResolve(graph)
-    this.popup.close()
+  onGetMail(data: any) {
+    this.getMailResolve && this.getMailResolve(data.result.graph)
+    if (data.portal === 'window'){
+      this.popup.close()
+    }
   }
 
   reviveUser(wif: string, username: string) {
@@ -180,14 +196,15 @@ export class Identity {
     return forge.sha256.create().update(username_signatures[0] + username_signatures[1] + collection).digest().toHex();
   }
 
-  getIdentity() {
+  getIdentity(portal: string) {
     return new Promise((resolve, reject) => {
       this.identityResolve = resolve;
       this.identityReject = reject;
-      this.popup = window.open(this.settings.webServiceURL + '/identity#' + btoa(JSON.stringify({
+      this.openPortal({
         method: 'identity',
-        origin: '*'
-      })), '_blank', 'left=100,top=100,width=450,height=500')
+        origin: '*',
+        portal
+      })
     })
   }
 
@@ -219,17 +236,18 @@ export class Identity {
     return iden;
   }
 
-  async getAuth() {
+  async getAuth(portal: string) {
     return new Promise((resolve, reject) => {
       this.getAuthResolve = resolve;
       this.getAuthReject = reject;
       return new Promise((resolve, reject) => {
         this.identityResolve = resolve;
         this.identityReject = reject;
-        this.popup = window.open(this.settings.webServiceURL + '/identity#' + btoa(JSON.stringify({
-          'method':'identity',
-          'origin': '*'
-        })), '_blank', 'left=100,top=100,width=450,height=500')
+        this.openPortal({
+          method:'identity',
+          origin: '*',
+          portal
+        })
       })
       .then(() => {
         return fetch(this.settings.webServiceURL + '/challenge', {
@@ -245,31 +263,43 @@ export class Identity {
         return res.json()
       })
       .then((data) => {
-        this.popup = window.open(this.settings.webServiceURL + '/identity#' + btoa(JSON.stringify({
+        this.openPortal({
           method:'signin',
           origin: '*',
+          portal,
           message: {
             challenge: data.challenge,
             identity: this.identity
           }
-        })), '_blank', 'left=100,top=100,width=450,height=500')
+        })
       })
     })
   }
 
-  async getSignature(hash: string) {
+  async getSignature(hash: string, portal: string) {
     return new Promise((resolve, reject) => {
       this.getAuthResolve = resolve;
       this.getAuthReject = reject;
-      this.popup = window.open(this.settings.webServiceURL + '/identity#' + btoa(JSON.stringify({
+      this.openPortal({
         method:'signin',
         origin: '*',
+        portal,
         message: {
           challenge: hash,
           identity: this.identity
         }
-      })), '_blank', 'left=100,top=100,width=450,height=500')
+      })
     })
+  }
+
+  openPortal(options: any) {
+    if(options.portal === 'window') {
+      this.popup = window.open(
+        this.settings.webServiceURL + '/identity#' + btoa(JSON.stringify(options)),
+        '_blank',
+        'left=100,top=100,width=450,height=500'
+      )
+    }
   }
 }
 
