@@ -293,12 +293,19 @@ export class Identity {
   }
 
   openPortal(options: any) {
+    const url = this.settings.webServiceURL + '/identity#' + btoa(JSON.stringify(options))
     if(options.portal === 'window') {
       this.popup = window.open(
-        this.settings.webServiceURL + '/identity#' + btoa(JSON.stringify(options)),
+        url,
         '_blank',
         'left=100,top=100,width=450,height=500'
       )
+    } else if(options.portal === 'iframe') {
+      const iframe = document.getElementById('yadacoin_identity_widget') || document.createElement('iframe') as any;
+      iframe.id = 'yadacoin_identity_widget'
+      iframe.src = url;
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
     }
   }
 }
