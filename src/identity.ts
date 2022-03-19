@@ -196,14 +196,17 @@ export class Identity {
     return forge.sha256.create().update(username_signatures[0] + username_signatures[1] + collection).digest().toHex();
   }
 
-  getIdentity(portal: string) {
+  getIdentity(portal: string, identifier: string) {
     return new Promise((resolve, reject) => {
       this.identityResolve = resolve;
       this.identityReject = reject;
       this.openPortal({
         method: 'identity',
         origin: '*',
-        portal
+        portal,
+        message: {
+          identifier
+        }
       })
     })
   }
@@ -301,11 +304,14 @@ export class Identity {
         'left=100,top=100,width=450,height=500'
       )
     } else if(options.portal === 'iframe') {
-      const iframe = document.getElementById('yadacoin_identity_widget') || document.createElement('iframe') as any;
-      iframe.id = 'yadacoin_identity_widget'
+      let iframe = document.getElementById('yadacoin_identity_widget')as any;
+      if(!iframe) {
+        iframe = document.createElement('iframe') as any
+        iframe.id = 'yadacoin_identity_widget'
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+      };
       iframe.src = url;
-      iframe.style.display = 'none';
-      document.body.appendChild(iframe);
     }
   }
 }
