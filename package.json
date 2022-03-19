@@ -1,6 +1,6 @@
 {
   "name": "yadacoinjs",
-  "version": "1.0.6",
+  "version": "1.0.8",
   "description": "Web 3.0 JavaScript/TypeScript framework for interacting with the YadaCoin blockchain.",
   "main": "./dist/index.js",
   "repository": "https://github.com/pdxwebdev/yadacoinjs",
