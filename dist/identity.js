@@ -102,13 +102,13 @@ define(["require", "exports"], function (require, exports) {
             }
         }
         onAddContact(data) {
-            this.getAuthResolve && this.addContactResolve();
+            this.addContactResolve && this.addContactResolve();
             if (data.portal === 'window') {
                 this.popup.close();
             }
         }
         onAddGroup(data) {
-            this.getAuthResolve && this.addGroupResolve();
+            this.addGroupResolve && this.addGroupResolve();
             if (data.portal === 'window') {
                 this.popup.close();
             }

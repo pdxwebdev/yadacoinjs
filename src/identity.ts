@@ -129,14 +129,14 @@ export class Identity {
   }
 
   onAddContact(data: any) {
-    this.getAuthResolve && this.addContactResolve()
+    this.addContactResolve && this.addContactResolve()
     if (data.portal === 'window'){
       this.popup.close()
     }
   }
 
   onAddGroup(data: any) {
-    this.getAuthResolve && this.addGroupResolve()
+    this.addGroupResolve && this.addGroupResolve()
     if (data.portal === 'window'){
       this.popup.close()
     }
