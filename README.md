@@ -20,6 +20,6 @@
   const identity = new Identity(settings)
   const graph = new Graph(settings, identity)
   const user = await identity.getIdentity()
-  const signature = await identity.getSignature(message, 'iframe')
+  const signature = await identity.getSignature('message', 'iframe')
 })
 ```
