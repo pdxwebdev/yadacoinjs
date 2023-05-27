@@ -11,6 +11,18 @@
   ]
 }
 ```
+For webpack >= version 5
+`yarrn add node-polyfill-webpack-plugin`
+
+In node_modules/react-scripts/config/webpack.config.js add:
+`const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');`
+
+Then under getStyleLoaders -> plugins add this to the array:
+```
+		new NodePolyfillPlugin({
+			excludeAliases: ['crypto']
+		})
+```
 
 ## Usage
 ```
