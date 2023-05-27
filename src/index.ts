@@ -4,12 +4,4 @@ import { Identity, IdentityI } from "./identity";
 import { Settings } from "./settings";
 import { Transaction } from "./transaction";
 
-export {
-  Crypt,
-  Graph,
-  GraphI,
-  Identity,
-  IdentityI,
-  Settings,
-  Transaction
-}
+export { Crypt, Graph, GraphI, Identity, IdentityI, Settings, Transaction };
