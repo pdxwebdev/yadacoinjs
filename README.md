@@ -12,7 +12,7 @@
 }
 ```
 For webpack >= version 5
-`yarrn add node-polyfill-webpack-plugin`
+`yarn add node-polyfill-webpack-plugin`
 
 In node_modules/react-scripts/config/webpack.config.js add:
 `const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');`
