@@ -1,3 +1,5 @@
+import ripemd160 from "noble-ripemd160";
+import bs58 from "bs58";
 import { GraphI } from ".";
 import { Settings } from "./settings";
 
@@ -232,10 +234,62 @@ export class Identity {
     return JSON.stringify(this.toIdentity(this.identity), null, 4);
   }
 
-  publicKeyToAddress(public_key: string) {
-    return foobar.bitcoin.ECPair.fromPublicKeyBuffer(
-      foobar.Buffer.Buffer.from(public_key, "hex")
-    ).getAddress();
+  async publicKeyToAddress(public_key: string) {
+    const pubkey256 = await this.sha256(public_key);
+    const hash160 = ripemd160(this.hexToByteArray(pubkey256));
+    console.log(this.toHex(hash160));
+    const first = await this.sha256("00" + this.toHex(hash160));
+    console.log(first);
+    const pubkey2562 = await this.sha256(first);
+    console.log(this.toHex(pubkey2562));
+    const unencodedAddress =
+      "00" + this.toHex(hash160) + pubkey2562.substring(0, 8);
+    return bs58.encode(this.hexToByteArray(unencodedAddress));
+  }
+
+  async sha256(hexstr: any) {
+    // We transform the string into an arraybuffer.
+    var buffer = new Uint8Array(
+      hexstr.match(/[\da-f]{2}/gi).map(function (h: any) {
+        return parseInt(h, 16);
+      })
+    );
+    const hash = await crypto.subtle.digest("SHA-256", buffer);
+    return await this.arbuf2hex(hash);
+  }
+
+  hexToByteArray(s: any) {
+    var arr = [];
+    for (var i = 0; i < s.length; i += 2) {
+      var c = s.substr(i, 2);
+      arr.push(parseInt(c, 16));
+    }
+    return new Uint8Array(arr);
+  }
+
+  async arbuf2hex(buffer: any) {
+    var hexCodes = [];
+    var view = new DataView(buffer);
+    for (var i = 0; i < view.byteLength; i += 4) {
+      // Using getUint32 reduces the number of iterations needed (we process 4 bytes each time)
+      var value = view.getUint32(i);
+      // toString(16) will give the hex representation of the number without padding
+      var stringValue = value.toString(16);
+      // We use concatenation and slice for padding
+      var padding = "00000000";
+      var paddedValue = (padding + stringValue).slice(-padding.length);
+      hexCodes.push(paddedValue);
+    }
+
+    // Join all the hex strings into one
+    return hexCodes.join("");
+  }
+
+  toHex(byteArray: any) {
+    var callback = function (byte: any) {
+      return ("0" + (byte & 0xff).toString(16)).slice(-2);
+    };
+    return Array.from(byteArray, callback).join("");
   }
 
   toIdentity(identity: IdentityI.Identity) {
@@ -345,6 +399,7 @@ export declare namespace IdentityI {
       username_signature: string;
     };
     collection: string;
+    key: any;
   }
   export interface Collections {
     AFFILIATE: string;

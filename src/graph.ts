@@ -334,7 +334,7 @@ export class Graph {
     };
   }
 
-  generateMessage({ identity, recipient, collection, message }: any) {
+  async generateMessage({ identity, recipient, collection, message }: any) {
     const rid = this.generateRid(
       identity.username_signature,
       recipient.username_signature
@@ -363,7 +363,7 @@ export class Graph {
         sender: identity,
         ...message,
       };
-      return info;
+      return await this.transaction.generateTransaction(info);
     } else {
       var dh_public_key = this.keys[rid].dh_public_keys[0];
       var dh_private_key = this.keys[rid].dh_private_keys[0];
@@ -397,16 +397,15 @@ export class Graph {
         info.relationship[collection] = {
           ...message,
         };
-        return info;
+        return await this.transaction.generateTransaction(info);
       }
     }
     return false;
   }
 
   async _sendMail(params: any) {
-    const info = this.generateMessage(params);
-    if (info === false) return;
-    const txn = await this.transaction.generateTransaction(info);
+    const txn = await this.generateMessage(params);
+    if (txn === false) return;
     await this.transaction.sendTransaction(txn);
   }
 

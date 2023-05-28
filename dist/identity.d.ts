@@ -39,7 +39,11 @@ export declare class Identity {
     getIdentity(portal: string, identifier: string): Promise<unknown>;
     cloneIdentity(): any;
     identityJson(): string;
-    publicKeyToAddress(public_key: string): any;
+    publicKeyToAddress(public_key: string): Promise<string>;
+    sha256(hexstr: any): Promise<string>;
+    hexToByteArray(s: any): Uint8Array;
+    arbuf2hex(buffer: any): Promise<string>;
+    toHex(byteArray: any): string;
     toIdentity(identity: IdentityI.Identity): any;
     getAuth(portal: string): Promise<unknown>;
     getSignature(hash: string, portal: string): Promise<unknown>;
@@ -56,6 +60,7 @@ export declare namespace IdentityI {
             username_signature: string;
         };
         collection: string;
+        key: any;
     }
     interface Collections {
         AFFILIATE: string;

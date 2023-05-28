@@ -1,7 +1,20 @@
-define(["require", "exports"], function (require, exports) {
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+define(["require", "exports", "base64-js"], function (require, exports, base64_js_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Transaction = void 0;
+    base64_js_1 = __importDefault(base64_js_1);
     class Transaction {
         constructor(settings, identity) {
             this.info = null;
@@ -25,8 +38,8 @@ define(["require", "exports"], function (require, exports) {
             this.cbattempts = [12, 5, 4];
         }
         generateTransaction(info) {
-            return new Promise((resolve, reject) => {
-                const version = 3;
+            return __awaiter(this, void 0, void 0, function* () {
+                const version = 4;
                 this.txnattempts = [12, 5, 4];
                 this.cbattempts = [12, 5, 4];
                 this.key = this.identity.identity.key;
@@ -40,7 +53,7 @@ define(["require", "exports"], function (require, exports) {
                 this.to = this.info.to;
                 this.value = parseFloat(this.info.value);
                 this.transaction = {
-                    version: 3,
+                    version: version,
                     rid: this.info.rid,
                     fee: 0.0,
                     outputs: [],
@@ -51,7 +64,7 @@ define(["require", "exports"], function (require, exports) {
                         ? ""
                         : this.info.requested_rid,
                     time: parseInt((+new Date() / 1000).toString()).toString(),
-                    public_key: this.key.getPublicKeyBuffer().toString("hex"),
+                    public_key: this.key.getPublic(true, "hex"),
                 };
                 if (this.info.outputs) {
                     this.transaction.outputs = this.info.outputs;
@@ -138,7 +151,7 @@ define(["require", "exports"], function (require, exports) {
                 //         inputs_hashes_concat = inputs_hashes_arr.join('')
                 //     }
                 // }
-                var myAddress = this.key.getAddress();
+                var myAddress = yield this.identity.publicKeyToAddress(this.transaction.public_key);
                 var found = false;
                 for (var h = 0; h < this.transaction.outputs.length; h++) {
                     if (this.transaction.outputs[h].to == myAddress) {
@@ -147,7 +160,7 @@ define(["require", "exports"], function (require, exports) {
                 }
                 if (!found) {
                     this.transaction.outputs.push({
-                        to: this.key.getAddress(),
+                        to: myAddress,
                         value: 0,
                     });
                 }
@@ -169,8 +182,7 @@ define(["require", "exports"], function (require, exports) {
                 if (this.info.dh_public_key && this.info.relationship.dh_private_key) {
                     // creating new relationship
                     this.transaction.relationship = this.crypt.publicEncrypt(JSON.stringify(this.info.relationship), this.recipient_identity.public_key);
-                    var hash = foobar.bitcoin.crypto
-                        .sha256(this.transaction.public_key +
+                    var hash = yield this.identity.sha256(this.transaction.public_key +
                         this.transaction.time +
                         this.transaction.dh_public_key +
                         this.transaction.rid +
@@ -180,8 +192,7 @@ define(["require", "exports"], function (require, exports) {
                         this.transaction.requested_rid +
                         inputs_hashes_concat +
                         outputs_hashes_concat +
-                        version)
-                        .toString("hex");
+                        version);
                 }
                 else if (this.info.relationship[this.identity.collections.SMART_CONTRACT]) {
                     //creating smart contract instance
@@ -194,8 +205,7 @@ define(["require", "exports"], function (require, exports) {
                         smart_contract.target = this.crypt.shared_encrypt(this.info.shared_secret, JSON.stringify(smart_contract.target));
                     }
                     this.transaction.relationship[this.identity.collections.SMART_CONTRACT].creator = this.crypt.shared_encrypt(this.info.shared_secret, JSON.stringify(this.transaction.relationship[this.identity.collections.SMART_CONTRACT].creator));
-                    var hash = foobar.bitcoin.crypto
-                        .sha256(this.transaction.public_key +
+                    var hash = yield this.identity.sha256(this.transaction.public_key +
                         this.transaction.time +
                         this.transaction.rid +
                         //   this.smartContract.toString(this.info.relationship[this.identity.collections.SMART_CONTRACT]) +
@@ -204,8 +214,7 @@ define(["require", "exports"], function (require, exports) {
                         this.transaction.requested_rid +
                         inputs_hashes_concat +
                         outputs_hashes_concat +
-                        version)
-                        .toString("hex");
+                        version);
                 }
                 else if (this.info.relationship[this.identity.collections.CALENDAR] ||
                     this.info.relationship[this.identity.collections.CHAT] ||
@@ -215,8 +224,7 @@ define(["require", "exports"], function (require, exports) {
                     this.info.relationship[this.identity.collections.MAIL]) {
                     // chat
                     this.transaction.relationship = this.crypt.shared_encrypt(this.info.shared_secret, JSON.stringify(this.info.relationship));
-                    hash = foobar.bitcoin.crypto
-                        .sha256(this.transaction.public_key +
+                    hash = yield this.identity.sha256(this.transaction.public_key +
                         this.transaction.time +
                         this.transaction.rid +
                         this.transaction.relationship +
@@ -225,14 +233,12 @@ define(["require", "exports"], function (require, exports) {
                         this.transaction.requested_rid +
                         inputs_hashes_concat +
                         outputs_hashes_concat +
-                        version)
-                        .toString("hex");
+                        version);
                 }
                 else if (this.info.relationship[this.identity.collections.WEB_PAGE_REQUEST]) {
                     // sign in
                     this.transaction.relationship = this.crypt.shared_encrypt(this.info.shared_secret, JSON.stringify(this.info.relationship));
-                    hash = foobar.bitcoin.crypto
-                        .sha256(this.transaction.public_key +
+                    hash = yield this.identity.sha256(this.transaction.public_key +
                         this.transaction.time +
                         this.transaction.rid +
                         this.transaction.relationship +
@@ -241,14 +247,12 @@ define(["require", "exports"], function (require, exports) {
                         this.transaction.requested_rid +
                         inputs_hashes_concat +
                         outputs_hashes_concat +
-                        version)
-                        .toString("hex");
+                        version);
                 }
                 else if (this.info.relationship.wif) {
                     // recovery
                     this.transaction.relationship = this.crypt.shared_encrypt(this.info.shared_secret, JSON.stringify(this.info.relationship));
-                    hash = foobar.bitcoin.crypto
-                        .sha256(this.transaction.public_key +
+                    hash = yield this.identity.sha256(this.transaction.public_key +
                         this.transaction.time +
                         this.transaction.rid +
                         this.transaction.relationship +
@@ -257,8 +261,7 @@ define(["require", "exports"], function (require, exports) {
                         this.transaction.requested_rid +
                         inputs_hashes_concat +
                         outputs_hashes_concat +
-                        version)
-                        .toString("hex");
+                        version);
                 }
                 else if (this.info.relationship[this.identity.collections.GROUP]) {
                     // join or create group
@@ -269,8 +272,7 @@ define(["require", "exports"], function (require, exports) {
                     else {
                         this.transaction.relationship = this.crypt.encrypt(this.info.relationship);
                     }
-                    hash = foobar.bitcoin.crypto
-                        .sha256(this.transaction.public_key +
+                    hash = yield this.identity.sha256(this.transaction.public_key +
                         this.transaction.time +
                         this.transaction.rid +
                         this.transaction.relationship +
@@ -279,14 +281,12 @@ define(["require", "exports"], function (require, exports) {
                         this.transaction.requested_rid +
                         inputs_hashes_concat +
                         outputs_hashes_concat +
-                        version)
-                        .toString("hex");
+                        version);
                 }
                 else if (this.info.relationship[this.identity.collections.MARKET]) {
                     // join or create market
                     this.transaction.relationship = this.crypt.encrypt(this.info.relationship);
-                    hash = foobar.bitcoin.crypto
-                        .sha256(this.transaction.public_key +
+                    hash = yield this.identity.sha256(this.transaction.public_key +
                         this.transaction.time +
                         this.transaction.rid +
                         this.transaction.relationship +
@@ -295,8 +295,7 @@ define(["require", "exports"], function (require, exports) {
                         this.transaction.requested_rid +
                         inputs_hashes_concat +
                         outputs_hashes_concat +
-                        version)
-                        .toString("hex");
+                        version);
                 }
                 else if (this.info.relationship[this.identity.collections.AFFILIATE] ||
                     this.info.relationship[this.identity.collections.BID] ||
@@ -307,8 +306,7 @@ define(["require", "exports"], function (require, exports) {
                     this.info.relationship[this.identity.collections.WEB_SIGNIN_REQUEST] ||
                     this.info.relationship[this.identity.collections.WEB_SIGNIN_RESPONSE]) {
                     this.transaction.relationship = this.crypt.shared_encrypt(this.info.shared_secret, JSON.stringify(this.info.relationship));
-                    hash = foobar.bitcoin.crypto
-                        .sha256(this.transaction.public_key +
+                    hash = yield this.identity.sha256(this.transaction.public_key +
                         this.transaction.time +
                         this.transaction.rid +
                         this.transaction.relationship +
@@ -317,15 +315,13 @@ define(["require", "exports"], function (require, exports) {
                         this.transaction.requested_rid +
                         inputs_hashes_concat +
                         outputs_hashes_concat +
-                        version)
-                        .toString("hex");
+                        version);
                 }
                 else if (this.info.relationship[this.identity.collections.WEB_PAGE] ||
                     this.info.relationship[this.identity.collections.ASSET]) {
                     // mypage
                     this.transaction.relationship = this.crypt.encrypt(this.info.relationship);
-                    hash = foobar.bitcoin.crypto
-                        .sha256(this.transaction.public_key +
+                    hash = yield this.identity.sha256(this.transaction.public_key +
                         this.transaction.time +
                         this.transaction.rid +
                         this.transaction.relationship +
@@ -334,13 +330,11 @@ define(["require", "exports"], function (require, exports) {
                         this.transaction.requested_rid +
                         inputs_hashes_concat +
                         outputs_hashes_concat +
-                        version)
-                        .toString("hex");
+                        version);
                 }
                 else {
                     //straight transaction
-                    hash = foobar.bitcoin.crypto
-                        .sha256(this.transaction.public_key +
+                    hash = yield this.identity.sha256(this.transaction.public_key +
                         this.transaction.time +
                         (this.transaction.rid || "") +
                         (this.transaction.relationship || "") +
@@ -349,34 +343,34 @@ define(["require", "exports"], function (require, exports) {
                         (this.transaction.requested_rid || "") +
                         inputs_hashes_concat +
                         outputs_hashes_concat +
-                        version)
-                        .toString("hex");
+                        version);
                 }
                 this.transaction.hash = hash;
                 var attempt = this.txnattempts.pop();
                 attempt = this.cbattempts.pop();
-                this.transaction.id = this.get_transaction_id(this.transaction.hash, attempt);
+                this.transaction.id = this.sign(this.transaction.hash, this.identity);
                 if (hash) {
-                    resolve(this.transaction);
+                    return this.transaction;
                 }
-                else {
-                    reject(false);
-                }
+                return false;
             });
         }
         sendTransaction(txn = null, transactionUrlOverride = undefined) {
-            return new Promise((resolve, reject) => {
-                var url = "";
-                url =
-                    (transactionUrlOverride ||
-                        this.settings.webServiceURL + "/transaction") +
-                        "?username_signature=" +
-                        this.identity.identity.username_signature +
-                        "&to=" +
-                        this.key.getAddress() +
-                        "&username=" +
-                        this.username;
-                this.post(url, txn, resolve, reject);
+            return __awaiter(this, void 0, void 0, function* () {
+                const address = yield this.identity.publicKeyToAddress(txn.public_key);
+                return new Promise((resolve, reject) => {
+                    var url = "";
+                    url =
+                        (transactionUrlOverride ||
+                            this.settings.webServiceURL + "/transaction") +
+                            "?username_signature=" +
+                            this.identity.identity.username_signature +
+                            "&to=" +
+                            address +
+                            "&username=" +
+                            this.username;
+                    this.post(url, txn, resolve, reject);
+                });
             });
         }
         post(url, txn, resolve, reject) {
@@ -394,17 +388,10 @@ define(["require", "exports"], function (require, exports) {
                 return reject(err);
             });
         }
-        get_transaction_id(hash, trynum) {
-            var combine = new Uint8Array(hash.length);
-            //combine[0] = 0;
-            //combine[1] = 64;
-            for (var i = 0; i < hash.length; i++) {
-                combine[i] = hash.charCodeAt(i);
-            }
-            var shaMessage = foobar.bitcoin.crypto.sha256(combine);
-            var signature = this.key.sign(shaMessage);
-            var der = signature.toDER();
-            return foobar.base64.fromByteArray(der);
+        sign(message, identity) {
+            var hash = forge.sha256.create().update(message).digest().toHex();
+            var der = identity.identity.key.sign(hash).toDER();
+            return base64_js_1.default.fromByteArray(der);
         }
     }
     exports.Transaction = Transaction;

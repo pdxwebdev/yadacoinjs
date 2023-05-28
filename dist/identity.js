@@ -7,10 +7,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-define(["require", "exports"], function (require, exports) {
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+define(["require", "exports", "noble-ripemd160", "bs58"], function (require, exports, noble_ripemd160_1, bs58_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Identity = void 0;
+    noble_ripemd160_1 = __importDefault(noble_ripemd160_1);
+    bs58_1 = __importDefault(bs58_1);
     class Identity {
         constructor(settings) {
             this.identity = {};
@@ -188,7 +193,59 @@ define(["require", "exports"], function (require, exports) {
             return JSON.stringify(this.toIdentity(this.identity), null, 4);
         }
         publicKeyToAddress(public_key) {
-            return foobar.bitcoin.ECPair.fromPublicKeyBuffer(foobar.Buffer.Buffer.from(public_key, "hex")).getAddress();
+            return __awaiter(this, void 0, void 0, function* () {
+                const pubkey256 = yield this.sha256(public_key);
+                const hash160 = (0, noble_ripemd160_1.default)(this.hexToByteArray(pubkey256));
+                console.log(this.toHex(hash160));
+                const first = yield this.sha256("00" + this.toHex(hash160));
+                console.log(first);
+                const pubkey2562 = yield this.sha256(first);
+                console.log(this.toHex(pubkey2562));
+                const unencodedAddress = "00" + this.toHex(hash160) + pubkey2562.substring(0, 8);
+                return bs58_1.default.encode(this.hexToByteArray(unencodedAddress));
+            });
+        }
+        sha256(hexstr) {
+            return __awaiter(this, void 0, void 0, function* () {
+                // We transform the string into an arraybuffer.
+                var buffer = new Uint8Array(hexstr.match(/[\da-f]{2}/gi).map(function (h) {
+                    return parseInt(h, 16);
+                }));
+                const hash = yield crypto.subtle.digest("SHA-256", buffer);
+                return yield this.arbuf2hex(hash);
+            });
+        }
+        hexToByteArray(s) {
+            var arr = [];
+            for (var i = 0; i < s.length; i += 2) {
+                var c = s.substr(i, 2);
+                arr.push(parseInt(c, 16));
+            }
+            return new Uint8Array(arr);
+        }
+        arbuf2hex(buffer) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var hexCodes = [];
+                var view = new DataView(buffer);
+                for (var i = 0; i < view.byteLength; i += 4) {
+                    // Using getUint32 reduces the number of iterations needed (we process 4 bytes each time)
+                    var value = view.getUint32(i);
+                    // toString(16) will give the hex representation of the number without padding
+                    var stringValue = value.toString(16);
+                    // We use concatenation and slice for padding
+                    var padding = "00000000";
+                    var paddedValue = (padding + stringValue).slice(-padding.length);
+                    hexCodes.push(paddedValue);
+                }
+                // Join all the hex strings into one
+                return hexCodes.join("");
+            });
+        }
+        toHex(byteArray) {
+            var callback = function (byte) {
+                return ("0" + (byte & 0xff).toString(16)).slice(-2);
+            };
+            return Array.from(byteArray, callback).join("");
         }
         toIdentity(identity) {
             if (!identity)

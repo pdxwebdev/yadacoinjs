@@ -25,9 +25,9 @@ export declare class Transaction {
     settings: any;
     crypt: any;
     constructor(settings: Settings, identity: Identity);
-    generateTransaction(info: GraphI.TxnParams): Promise<unknown>;
-    sendTransaction(txn?: null, transactionUrlOverride?: undefined): Promise<unknown>;
+    generateTransaction(info: GraphI.TxnParams): Promise<any>;
+    sendTransaction(txn?: any, transactionUrlOverride?: undefined): Promise<unknown>;
     post(url: string, txn: GraphI.Txn | null, resolve: any, reject: any): Promise<any>;
-    get_transaction_id(hash: any, trynum: any): any;
+    sign(message: string, identity: Identity): string;
 }
 //# sourceMappingURL=transaction.d.ts.map

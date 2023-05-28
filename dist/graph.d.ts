@@ -49,7 +49,7 @@ export declare class Graph {
         filename: any;
         rid: string;
     };
-    generateMessage({ identity, recipient, collection, message }: any): false | GraphI.TxnParams;
+    generateMessage({ identity, recipient, collection, message }: any): Promise<any>;
     _sendMail(params: any): Promise<void>;
     addFriend(identity: IdentityI.Identity, rid?: string, requester_rid?: string, requested_rid?: string): any;
     getFriendRequests(rid?: null): Promise<unknown>;

@@ -264,68 +264,56 @@ define(["require", "exports"], function (require, exports) {
             };
         }
         generateMessage({ identity, recipient, collection, message }) {
-            const rid = this.generateRid(identity.username_signature, recipient.username_signature);
-            const requester_rid = this.generateRid(identity.username_signature, identity.username_signature, collection);
-            const requested_rid = this.generateRid(recipient.username_signature, recipient.username_signature, collection);
-            let send = false;
-            let info = {};
-            if (this.isGroup(recipient)) {
-                info = {
-                    relationship: {},
-                    rid: rid,
-                    requester_rid: requester_rid,
-                    requested_rid: requested_rid,
-                    shared_secret: recipient.username_signature,
-                };
-                info.relationship[collection] = {
-                    sender: identity,
-                    subject: message.subject,
-                    body: message.body,
-                    thread: message.thread,
-                    event_datetime: message.event_datetime,
-                    filename: message.filepath,
-                };
-                return info;
-            }
-            else {
-                var dh_public_key = this.keys[rid].dh_public_keys[0];
-                var dh_private_key = this.keys[rid].dh_private_keys[0];
-                if (dh_public_key && dh_private_key) {
-                    var privk = new Uint8Array(dh_private_key.match(/[\da-f]{2}/gi).map(function (h) {
-                        return parseInt(h, 16);
-                    }));
-                    var pubk = new Uint8Array(dh_public_key.match(/[\da-f]{2}/gi).map(function (h) {
-                        return parseInt(h, 16);
-                    }));
-                    var shared_secret = this.crypt.toHex(X25519.getSharedKey(privk, pubk));
-                    // camera permission was granted
+            return __awaiter(this, void 0, void 0, function* () {
+                const rid = this.generateRid(identity.username_signature, recipient.username_signature);
+                const requester_rid = this.generateRid(identity.username_signature, identity.username_signature, collection);
+                const requested_rid = this.generateRid(recipient.username_signature, recipient.username_signature, collection);
+                let send = false;
+                let info = {};
+                if (this.isGroup(recipient)) {
                     info = {
-                        dh_public_key: dh_public_key,
-                        dh_private_key: dh_private_key,
                         relationship: {},
-                        shared_secret: shared_secret,
                         rid: rid,
                         requester_rid: requester_rid,
                         requested_rid: requested_rid,
+                        shared_secret: recipient.username_signature,
                     };
-                    info.relationship[collection] = {
-                        subject: message.subject,
-                        body: message.body,
-                        thread: message.thread,
-                        event_datetime: message.event_datetime,
-                        filename: message.filepath,
-                    };
-                    return info;
+                    info.relationship[collection] = Object.assign({ sender: identity }, message);
+                    return yield this.transaction.generateTransaction(info);
                 }
-            }
-            return false;
+                else {
+                    var dh_public_key = this.keys[rid].dh_public_keys[0];
+                    var dh_private_key = this.keys[rid].dh_private_keys[0];
+                    if (dh_public_key && dh_private_key) {
+                        var privk = new Uint8Array(dh_private_key.match(/[\da-f]{2}/gi).map(function (h) {
+                            return parseInt(h, 16);
+                        }));
+                        var pubk = new Uint8Array(dh_public_key.match(/[\da-f]{2}/gi).map(function (h) {
+                            return parseInt(h, 16);
+                        }));
+                        var shared_secret = this.crypt.toHex(X25519.getSharedKey(privk, pubk));
+                        // camera permission was granted
+                        info = {
+                            dh_public_key: dh_public_key,
+                            dh_private_key: dh_private_key,
+                            relationship: {},
+                            shared_secret: shared_secret,
+                            rid: rid,
+                            requester_rid: requester_rid,
+                            requested_rid: requested_rid,
+                        };
+                        info.relationship[collection] = Object.assign({}, message);
+                        return yield this.transaction.generateTransaction(info);
+                    }
+                }
+                return false;
+            });
         }
         _sendMail(params) {
             return __awaiter(this, void 0, void 0, function* () {
-                const info = this.generateMessage(params);
-                if (info === false)
+                const txn = yield this.generateMessage(params);
+                if (txn === false)
                     return;
-                const txn = yield this.transaction.generateTransaction(info);
                 yield this.transaction.sendTransaction(txn);
             });
         }
