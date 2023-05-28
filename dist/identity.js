@@ -15,162 +15,169 @@ define(["require", "exports"], function (require, exports) {
         constructor(settings) {
             this.identity = {};
             this.collections = {
-                AFFILIATE: 'affiliate',
-                ASSET: 'asset',
-                BID: 'bid',
-                CONTACT: 'contact',
-                CALENDAR: 'event_meeting',
-                CHAT: 'chat',
-                CHAT_FILE: 'chat_file',
-                CONTRACT: 'contract',
-                CONTRACT_SIGNED: 'contract_signed',
-                GROUP: 'group',
-                GROUP_CALENDAR: 'group_event_meeting',
-                GROUP_CHAT: 'group_chat',
-                GROUP_CHAT_FILE_NAME: 'group_chat_file_name',
-                GROUP_CHAT_FILE: 'group_chat_file',
-                GROUP_MAIL: 'group_mail',
-                MAIL: 'mail',
-                MARKET: 'market',
-                PERMISSION_REQUEST: 'permission_request',
-                SIGNATURE_REQUEST: 'signature_request',
-                SMART_CONTRACT: 'smart_contract',
-                WEB_CHALLENGE_REQUEST: 'web_challenge_request',
-                WEB_CHALLENGE_RESPONSE: 'web_challenge_response',
-                WEB_PAGE: 'web_page',
-                WEB_PAGE_REQUEST: 'web_page_request',
-                WEB_PAGE_RESPONSE: 'web_page_response',
-                WEB_SIGNIN_REQUEST: 'web_signin_request',
-                WEB_SIGNIN_RESPONSE: 'web_signin_response'
+                AFFILIATE: "affiliate",
+                ASSET: "asset",
+                BID: "bid",
+                CONTACT: "contact",
+                CALENDAR: "event_meeting",
+                CHAT: "chat",
+                CHAT_FILE: "chat_file",
+                CONTRACT: "contract",
+                CONTRACT_SIGNED: "contract_signed",
+                GROUP: "group",
+                GROUP_CALENDAR: "group_event_meeting",
+                GROUP_CHAT: "group_chat",
+                GROUP_CHAT_FILE_NAME: "group_chat_file_name",
+                GROUP_CHAT_FILE: "group_chat_file",
+                GROUP_MAIL: "group_mail",
+                MAIL: "mail",
+                MARKET: "market",
+                PERMISSION_REQUEST: "permission_request",
+                SIGNATURE_REQUEST: "signature_request",
+                SMART_CONTRACT: "smart_contract",
+                WEB_CHALLENGE_REQUEST: "web_challenge_request",
+                WEB_CHALLENGE_RESPONSE: "web_challenge_response",
+                WEB_PAGE: "web_page",
+                WEB_PAGE_REQUEST: "web_page_request",
+                WEB_PAGE_RESPONSE: "web_page_response",
+                WEB_SIGNIN_REQUEST: "web_signin_request",
+                WEB_SIGNIN_RESPONSE: "web_signin_response",
             };
             this.listening = false;
             this.settings = settings;
             this.initListener();
         }
         initListener() {
-            window.addEventListener('message', (event) => __awaiter(this, void 0, void 0, function* () {
+            window.addEventListener("message", (event) => __awaiter(this, void 0, void 0, function* () {
                 console.log(event.data);
-                if (event.data.method === 'identity') {
+                if (event.data.method === "identity") {
                     this.identity = event.data.result.identity;
                     this.onIdentity(event.data);
                 }
-                if (event.data.method === 'signin') {
+                if (event.data.method === "signin") {
                     this.onSignIn(event.data);
-                    const data = yield (yield fetch(this.settings.webServiceURL + '/auth', {
-                        method: 'POST',
-                        cache: 'no-cache',
+                    const data = yield (yield fetch(this.settings.webServiceURL + "/auth", {
+                        method: "POST",
+                        cache: "no-cache",
                         headers: {
-                            'Content-Type': 'application/json'
+                            "Content-Type": "application/json",
                         },
                         body: JSON.stringify({
-                            'username_signature': event.data.result.identity.username_signature,
-                            'challenge_signature': event.data.result.signature
-                        })
+                            username_signature: event.data.result.identity.username_signature,
+                            challenge_signature: event.data.result.signature,
+                        }),
                     })).json();
                     console.log(data);
                 }
-                if (event.data.method === 'addcontact') {
+                if (event.data.method === "addcontact") {
                     this.onAddContact(event.data);
                 }
-                if (event.data.method === 'addgroup') {
+                if (event.data.method === "addgroup") {
                     this.onAddGroup(event.data);
                 }
-                if (event.data.method === 'getgraph') {
+                if (event.data.method === "getgraph") {
                     this.onGetGraph(event.data);
                 }
-                if (event.data.method === 'getcollection') {
+                if (event.data.method === "getcollection") {
                     this.onGetCollection(event.data);
                 }
-                if (event.data.method === 'sendmail') {
+                if (event.data.method === "sendmail") {
                     this.onSendMail(event.data);
                 }
-                if (event.data.method === 'getmail') {
+                if (event.data.method === "getmail") {
                     this.onGetMail(event.data);
                 }
             }));
         }
         onIdentity(data) {
             this.identityResolve && this.identityResolve(data.result.identity);
-            if (data.portal === 'window') {
+            if (data.portal === "window") {
                 this.popup.close();
             }
         }
         onSignIn(data) {
             this.getAuthResolve && this.getAuthResolve(data.result.signature);
-            if (data.portal === 'window') {
+            if (data.portal === "window") {
                 this.popup.close();
             }
         }
         onAddContact(data) {
             this.addContactResolve && this.addContactResolve();
-            if (data.portal === 'window') {
+            if (data.portal === "window") {
                 this.popup.close();
             }
         }
         onAddGroup(data) {
             this.addGroupResolve && this.addGroupResolve();
-            if (data.portal === 'window') {
+            if (data.portal === "window") {
                 this.popup.close();
             }
         }
         onGetGraph(data) {
             this.getGraphResolve && this.getGraphResolve(data.result.graph);
-            if (data.portal === 'window') {
+            if (data.portal === "window") {
                 this.popup.close();
             }
         }
         onGetCollection(data) {
             this.getCollectionResolve && this.getCollectionResolve(data.result.graph);
-            if (data.portal === 'window') {
+            if (data.portal === "window") {
                 this.popup.close();
             }
         }
         onSendMail(data) {
             this.sendMailResolve && this.sendMailResolve();
-            if (data.portal === 'window') {
+            if (data.portal === "window") {
                 this.popup.close();
             }
         }
         onGetMail(data) {
             this.getMailResolve && this.getMailResolve(data.result.graph);
-            if (data.portal === 'window') {
+            if (data.portal === "window") {
                 this.popup.close();
             }
         }
         reviveUser(wif, username) {
             return new Promise((resolve, reject) => {
                 var key = foobar.bitcoin.ECPair.fromWIF(wif);
-                var public_key = key.getPublicKeyBuffer().toString('hex');
+                var public_key = key.getPublicKeyBuffer().toString("hex");
                 const identity = {
                     username_signature: this.generateUsernameSignature(key, username),
                     username: username,
                     wif: wif,
                     public_key: public_key,
-                    key: key
+                    key: key,
                 };
                 return resolve(identity);
             });
         }
         generateUsernameSignature(key, username) {
-            return key.sign(foobar.bitcoin.crypto.sha256(username)).toDER().toString('base64');
+            return key
+                .sign(foobar.bitcoin.crypto.sha256(username))
+                .toDER()
+                .toString("base64");
         }
-        generateRid(username_signature1, username_signature2, collection = '') {
+        generateRid(username_signature1, username_signature2, collection = "") {
             const username_signatures = [username_signature1, username_signature2].sort(function (a, b) {
                 return a.toLowerCase().localeCompare(b.toLowerCase());
             });
-            return forge.sha256.create().update(username_signatures[0] + username_signatures[1] + collection).digest().toHex();
+            return forge.sha256
+                .create()
+                .update(username_signatures[0] + username_signatures[1] + collection)
+                .digest()
+                .toHex();
         }
         getIdentity(portal, identifier) {
             return new Promise((resolve, reject) => {
                 this.identityResolve = resolve;
                 this.identityReject = reject;
                 this.openPortal({
-                    method: 'identity',
-                    origin: '*',
+                    method: "identity",
+                    origin: "*",
                     portal,
                     message: {
-                        identifier
-                    }
+                        identifier,
+                    },
                 });
             });
         }
@@ -181,7 +188,7 @@ define(["require", "exports"], function (require, exports) {
             return JSON.stringify(this.toIdentity(this.identity), null, 4);
         }
         publicKeyToAddress(public_key) {
-            return foobar.bitcoin.ECPair.fromPublicKeyBuffer(foobar.Buffer.Buffer.from(public_key, 'hex')).getAddress();
+            return foobar.bitcoin.ECPair.fromPublicKeyBuffer(foobar.Buffer.Buffer.from(public_key, "hex")).getAddress();
         }
         toIdentity(identity) {
             if (!identity)
@@ -189,7 +196,7 @@ define(["require", "exports"], function (require, exports) {
             let iden = {
                 username: identity.username,
                 username_signature: identity.username_signature,
-                public_key: identity.public_key
+                public_key: identity.public_key,
             };
             if (identity.parent) {
                 iden.parent = identity.parent;
@@ -208,19 +215,19 @@ define(["require", "exports"], function (require, exports) {
                         this.identityResolve = resolve;
                         this.identityReject = reject;
                         this.openPortal({
-                            method: 'identity',
-                            origin: '*',
-                            portal
+                            method: "identity",
+                            origin: "*",
+                            portal,
                         });
                     })
                         .then(() => {
-                        return fetch(this.settings.webServiceURL + '/challenge', {
-                            method: 'POST',
-                            cache: 'no-cache',
+                        return fetch(this.settings.webServiceURL + "/challenge", {
+                            method: "POST",
+                            cache: "no-cache",
                             headers: {
-                                'Content-Type': 'application/json'
+                                "Content-Type": "application/json",
                             },
-                            body: JSON.stringify(this.identity)
+                            body: JSON.stringify(this.identity),
                         });
                     })
                         .then((res) => {
@@ -228,13 +235,13 @@ define(["require", "exports"], function (require, exports) {
                     })
                         .then((data) => {
                         this.openPortal({
-                            method: 'signin',
-                            origin: '*',
+                            method: "signin",
+                            origin: "*",
                             portal,
                             message: {
                                 challenge: data.challenge,
-                                identity: this.identity
-                            }
+                                identity: this.identity,
+                            },
                         });
                     });
                 });
@@ -246,31 +253,32 @@ define(["require", "exports"], function (require, exports) {
                     this.getAuthResolve = resolve;
                     this.getAuthReject = reject;
                     this.openPortal({
-                        method: 'signin',
-                        origin: '*',
+                        method: "signin",
+                        origin: "*",
                         portal,
                         message: {
                             challenge: hash,
-                            identity: this.identity
-                        }
+                            identity: this.identity,
+                        },
                     });
                 });
             });
         }
         openPortal(options) {
-            const url = this.settings.webServiceURL + '/identity#' + btoa(JSON.stringify(options));
-            if (options.portal === 'window') {
-                this.popup = window.open(url, '_blank', 'left=100,top=100,width=450,height=500');
+            const url = this.settings.webServiceURL +
+                "/identity#" +
+                btoa(JSON.stringify(options));
+            if (options.portal === "window") {
+                this.popup = window.open(url, "_blank", "left=100,top=100,width=450,height=500");
             }
-            else if (options.portal === 'iframe') {
-                let iframe = document.getElementById('yadacoin_identity_widget');
+            else if (options.portal === "iframe") {
+                let iframe = document.getElementById("yadacoin_identity_widget");
                 if (!iframe) {
-                    iframe = document.createElement('iframe');
-                    iframe.id = 'yadacoin_identity_widget';
-                    iframe.style.display = 'none';
+                    iframe = document.createElement("iframe");
+                    iframe.id = "yadacoin_identity_widget";
+                    iframe.style.display = "none";
                     document.body.appendChild(iframe);
                 }
-                ;
                 iframe.src = url;
             }
         }

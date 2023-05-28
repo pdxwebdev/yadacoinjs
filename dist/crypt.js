@@ -7,8 +7,12 @@ define(["require", "exports", "eciesjs"], function (require, exports, eciesjs_1)
             this.identity = identity;
         }
         encrypt(message) {
-            var key = forge.pkcs5.pbkdf2(forge.sha256.create().update(this.identity.identity.key.toWIF()).digest().toHex(), 'salt', 400, 32);
-            var cipher = forge.cipher.createCipher('AES-CBC', key);
+            var key = forge.pkcs5.pbkdf2(forge.sha256
+                .create()
+                .update(this.identity.identity.key.toWIF())
+                .digest()
+                .toHex(), "salt", 400, 32);
+            var cipher = forge.cipher.createCipher("AES-CBC", key);
             var iv = forge.random.getBytesSync(16);
             cipher.start({ iv: iv });
             cipher.update(forge.util.createBuffer(iv + JSON.stringify(message)));
@@ -16,8 +20,12 @@ define(["require", "exports", "eciesjs"], function (require, exports, eciesjs_1)
             return cipher.output.toHex();
         }
         decrypt(message) {
-            var key = forge.pkcs5.pbkdf2(forge.sha256.create().update(this.identity.identity.key.toWIF()).digest().toHex(), 'salt', 400, 32);
-            var decipher = forge.cipher.createDecipher('AES-CBC', key);
+            var key = forge.pkcs5.pbkdf2(forge.sha256
+                .create()
+                .update(this.identity.identity.key.toWIF())
+                .digest()
+                .toHex(), "salt", 400, 32);
+            var decipher = forge.cipher.createDecipher("AES-CBC", key);
             var enc = this.hexToBytes(message);
             decipher.start({ iv: enc.slice(0, 16) });
             decipher.update(forge.util.createBuffer(enc.slice(16)));
@@ -26,15 +34,15 @@ define(["require", "exports", "eciesjs"], function (require, exports, eciesjs_1)
         }
         publicEncrypt(message, public_key) {
             const data = Buffer.from(message);
-            return (0, eciesjs_1.encrypt)(public_key, data).toString('hex');
+            return (0, eciesjs_1.encrypt)(public_key, data).toString("hex");
         }
         publicDecrypt(message) {
             const decrypted = (0, eciesjs_1.decrypt)(this.identity.identity.key.d.toHex(), Buffer.from(this.hexToByteArray(message))).toString();
             return decrypted;
         }
         shared_encrypt(shared_secret, message) {
-            var key = forge.pkcs5.pbkdf2(forge.sha256.create().update(shared_secret).digest().toHex(), 'salt', 400, 32);
-            var cipher = forge.cipher.createCipher('AES-CBC', key);
+            var key = forge.pkcs5.pbkdf2(forge.sha256.create().update(shared_secret).digest().toHex(), "salt", 400, 32);
+            var cipher = forge.cipher.createCipher("AES-CBC", key);
             var iv = forge.random.getBytesSync(16);
             cipher.start({ iv: iv });
             cipher.update(forge.util.createBuffer(iv + Base64.encode(message)));
@@ -42,8 +50,8 @@ define(["require", "exports", "eciesjs"], function (require, exports, eciesjs_1)
             return cipher.output.toHex();
         }
         shared_decrypt(shared_secret, message) {
-            var key = forge.pkcs5.pbkdf2(forge.sha256.create().update(shared_secret).digest().toHex(), 'salt', 400, 32);
-            var decipher = forge.cipher.createDecipher('AES-CBC', key);
+            var key = forge.pkcs5.pbkdf2(forge.sha256.create().update(shared_secret).digest().toHex(), "salt", 400, 32);
+            var decipher = forge.cipher.createDecipher("AES-CBC", key);
             var enc = this.hexToBytes(message);
             decipher.start({ iv: enc.slice(0, 16) });
             decipher.update(forge.util.createBuffer(enc.slice(16)));
@@ -70,9 +78,9 @@ define(["require", "exports", "eciesjs"], function (require, exports, eciesjs_1)
         }
         toHex(byteArray) {
             var callback = function (byte) {
-                return ('0' + (byte & 0xFF).toString(16)).slice(-2);
+                return ("0" + (byte & 0xff).toString(16)).slice(-2);
             };
-            return Array.from(byteArray, callback).join('');
+            return Array.from(byteArray, callback).join("");
         }
     }
     exports.Crypt = Crypt;

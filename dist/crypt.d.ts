@@ -1,4 +1,4 @@
-import { Identity } from './identity';
+import { Identity } from "./identity";
 export declare class Crypt {
     identity: any;
     constructor(identity: Identity);

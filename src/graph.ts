@@ -1,6 +1,5 @@
 import { Settings } from "./settings";
 import { Identity, IdentityI } from "./identity";
-import { Crypt } from "./crypt";
 import { Transaction } from "./transaction";
 
 declare var forge: any;
@@ -335,39 +334,36 @@ export class Graph {
     };
   }
 
-  async _sendMail(params: any) {
+  generateMessage({ identity, recipient, collection, message }: any) {
     const rid = this.generateRid(
-      this.identity.identity.username_signature,
-      params.recipient.username_signature
+      identity.username_signature,
+      recipient.username_signature
     );
     const requester_rid = this.generateRid(
-      this.identity.identity.username_signature,
-      this.identity.identity.username_signature,
-      params.collection
+      identity.username_signature,
+      identity.username_signature,
+      collection
     );
     const requested_rid = this.generateRid(
-      params.recipient.username_signature,
-      params.recipient.username_signature,
-      params.collection
+      recipient.username_signature,
+      recipient.username_signature,
+      collection
     );
-    if (this.isGroup(params.recipient)) {
-      const info: GraphI.TxnParams = {
+    let send = false;
+    let info: GraphI.TxnParams = {};
+    if (this.isGroup(recipient)) {
+      info = {
         relationship: {},
         rid: rid,
         requester_rid: requester_rid,
         requested_rid: requested_rid,
-        shared_secret: params.recipient.username_signature,
+        shared_secret: recipient.username_signature,
       };
-      info.relationship[params.collection] = {
-        sender: this.identity.identity,
-        subject: params.subject,
-        body: params.body,
-        thread: params.thread,
-        event_datetime: params.event_datetime,
-        filename: params.filepath,
+      info.relationship[collection] = {
+        sender: identity,
+        ...message,
       };
-      const txn = await this.transaction.generateTransaction(info);
-      await this.transaction.sendTransaction(txn);
+      return info;
     } else {
       var dh_public_key = this.keys[rid].dh_public_keys[0];
       var dh_private_key = this.keys[rid].dh_private_keys[0];
@@ -389,7 +385,7 @@ export class Graph {
         );
         var shared_secret = this.crypt.toHex(X25519.getSharedKey(privk, pubk));
         // camera permission was granted
-        const info: GraphI.TxnParams = {
+        info = {
           dh_public_key: dh_public_key,
           dh_private_key: dh_private_key,
           relationship: {},
@@ -398,17 +394,20 @@ export class Graph {
           requester_rid: requester_rid,
           requested_rid: requested_rid,
         };
-        info.relationship[params.collection] = {
-          subject: params.subject,
-          body: params.body,
-          thread: params.thread,
-          event_datetime: params.event_datetime,
-          filename: params.filepath,
+        info.relationship[collection] = {
+          ...message,
         };
-        const txn = await this.transaction.generateTransaction(info);
-        await this.transaction.sendTransaction(txn);
+        return info;
       }
     }
+    return false;
+  }
+
+  async _sendMail(params: any) {
+    const info = this.generateMessage(params);
+    if (info === false) return;
+    const txn = await this.transaction.generateTransaction(info);
+    await this.transaction.sendTransaction(txn);
   }
 
   addFriend(

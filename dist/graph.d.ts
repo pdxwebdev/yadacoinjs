@@ -1,5 +1,5 @@
-import { Settings } from './settings';
-import { Identity, IdentityI } from './identity';
+import { Settings } from "./settings";
+import { Identity, IdentityI } from "./identity";
 export declare class Graph {
     notifications: any;
     graph: GraphI.Graph;
@@ -49,6 +49,7 @@ export declare class Graph {
         filename: any;
         rid: string;
     };
+    generateMessage({ identity, recipient, collection, message }: any): false | GraphI.TxnParams;
     _sendMail(params: any): Promise<void>;
     addFriend(identity: IdentityI.Identity, rid?: string, requester_rid?: string, requested_rid?: string): any;
     getFriendRequests(rid?: null): Promise<unknown>;

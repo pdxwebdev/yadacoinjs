@@ -1,6 +1,6 @@
-import { Settings } from './settings';
-import { GraphI } from './graph';
-import { Identity } from './identity';
+import { Settings } from "./settings";
+import { GraphI } from "./graph";
+import { Identity } from "./identity";
 export declare class Transaction {
     info: any;
     transaction: any | null;

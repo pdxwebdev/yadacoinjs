@@ -1,4 +1,4 @@
-import { Settings } from './settings';
+import { Settings } from "./settings";
 export declare class Identity {
     identity: any;
     key: any;

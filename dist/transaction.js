@@ -33,7 +33,8 @@ define(["require", "exports"], function (require, exports) {
                 this.username = this.identity.identity.username;
                 this.recipient_identity = info.recipient_identity;
                 this.info = info;
-                this.unspent_transaction_override = this.info.unspent_transaction;
+                this.unspent_transaction_override = this.info
+                    .unspent_transaction;
                 this.blockchainurl = this.info.blockchainurl;
                 this.callbackurl = this.info.callbackurl;
                 this.to = this.info.to;
@@ -41,12 +42,16 @@ define(["require", "exports"], function (require, exports) {
                 this.transaction = {
                     version: 3,
                     rid: this.info.rid,
-                    fee: 0.00,
+                    fee: 0.0,
                     outputs: [],
-                    requester_rid: typeof this.info.requester_rid == 'undefined' ? '' : this.info.requester_rid,
-                    requested_rid: typeof this.info.requested_rid == 'undefined' ? '' : this.info.requested_rid,
-                    time: parseInt(((+new Date()) / 1000).toString()).toString(),
-                    public_key: this.key.getPublicKeyBuffer().toString('hex')
+                    requester_rid: typeof this.info.requester_rid == "undefined"
+                        ? ""
+                        : this.info.requester_rid,
+                    requested_rid: typeof this.info.requested_rid == "undefined"
+                        ? ""
+                        : this.info.requested_rid,
+                    time: parseInt((+new Date() / 1000).toString()).toString(),
+                    public_key: this.key.getPublicKeyBuffer().toString("hex"),
                 };
                 if (this.info.outputs) {
                     this.transaction.outputs = this.info.outputs;
@@ -57,7 +62,7 @@ define(["require", "exports"], function (require, exports) {
                 if (this.to) {
                     this.transaction.outputs.push({
                         to: this.to,
-                        value: this.value || 0
+                        value: this.value || 0,
                     });
                 }
                 let transaction_total = 0;
@@ -70,7 +75,7 @@ define(["require", "exports"], function (require, exports) {
                 else {
                     transaction_total = parseFloat(this.transaction.fee);
                 }
-                let inputs_hashes_concat = '';
+                let inputs_hashes_concat = "";
                 // if ((this.info.relationship && this.info.relationship.dh_private_key && this.wallet.wallet.balance < transaction_total) /* || this.wallet.wallet.unspent_transactions.length == 0*/) {
                 //     reject("not enough money");
                 //     return
@@ -143,7 +148,7 @@ define(["require", "exports"], function (require, exports) {
                 if (!found) {
                     this.transaction.outputs.push({
                         to: this.key.getAddress(),
-                        value: 0
+                        value: 0,
                     });
                 }
                 let outputs_hashes = [];
@@ -157,14 +162,15 @@ define(["require", "exports"], function (require, exports) {
                         return 1;
                     return 0;
                 });
-                var outputs_hashes_concat = outputs_hashes_arr.join('');
-                if (typeof this.info.relationship === 'string') {
+                var outputs_hashes_concat = outputs_hashes_arr.join("");
+                if (typeof this.info.relationship === "string") {
                     this.transaction.relationship = this.info.relationship;
                 }
                 if (this.info.dh_public_key && this.info.relationship.dh_private_key) {
                     // creating new relationship
                     this.transaction.relationship = this.crypt.publicEncrypt(JSON.stringify(this.info.relationship), this.recipient_identity.public_key);
-                    var hash = foobar.bitcoin.crypto.sha256(this.transaction.public_key +
+                    var hash = foobar.bitcoin.crypto
+                        .sha256(this.transaction.public_key +
                         this.transaction.time +
                         this.transaction.dh_public_key +
                         this.transaction.rid +
@@ -174,7 +180,8 @@ define(["require", "exports"], function (require, exports) {
                         this.transaction.requested_rid +
                         inputs_hashes_concat +
                         outputs_hashes_concat +
-                        version).toString('hex');
+                        version)
+                        .toString("hex");
                 }
                 else if (this.info.relationship[this.identity.collections.SMART_CONTRACT]) {
                     //creating smart contract instance
@@ -187,7 +194,8 @@ define(["require", "exports"], function (require, exports) {
                         smart_contract.target = this.crypt.shared_encrypt(this.info.shared_secret, JSON.stringify(smart_contract.target));
                     }
                     this.transaction.relationship[this.identity.collections.SMART_CONTRACT].creator = this.crypt.shared_encrypt(this.info.shared_secret, JSON.stringify(this.transaction.relationship[this.identity.collections.SMART_CONTRACT].creator));
-                    var hash = foobar.bitcoin.crypto.sha256(this.transaction.public_key +
+                    var hash = foobar.bitcoin.crypto
+                        .sha256(this.transaction.public_key +
                         this.transaction.time +
                         this.transaction.rid +
                         //   this.smartContract.toString(this.info.relationship[this.identity.collections.SMART_CONTRACT]) +
@@ -196,7 +204,8 @@ define(["require", "exports"], function (require, exports) {
                         this.transaction.requested_rid +
                         inputs_hashes_concat +
                         outputs_hashes_concat +
-                        version).toString('hex');
+                        version)
+                        .toString("hex");
                 }
                 else if (this.info.relationship[this.identity.collections.CALENDAR] ||
                     this.info.relationship[this.identity.collections.CHAT] ||
@@ -206,7 +215,8 @@ define(["require", "exports"], function (require, exports) {
                     this.info.relationship[this.identity.collections.MAIL]) {
                     // chat
                     this.transaction.relationship = this.crypt.shared_encrypt(this.info.shared_secret, JSON.stringify(this.info.relationship));
-                    hash = foobar.bitcoin.crypto.sha256(this.transaction.public_key +
+                    hash = foobar.bitcoin.crypto
+                        .sha256(this.transaction.public_key +
                         this.transaction.time +
                         this.transaction.rid +
                         this.transaction.relationship +
@@ -215,12 +225,14 @@ define(["require", "exports"], function (require, exports) {
                         this.transaction.requested_rid +
                         inputs_hashes_concat +
                         outputs_hashes_concat +
-                        version).toString('hex');
+                        version)
+                        .toString("hex");
                 }
                 else if (this.info.relationship[this.identity.collections.WEB_PAGE_REQUEST]) {
                     // sign in
                     this.transaction.relationship = this.crypt.shared_encrypt(this.info.shared_secret, JSON.stringify(this.info.relationship));
-                    hash = foobar.bitcoin.crypto.sha256(this.transaction.public_key +
+                    hash = foobar.bitcoin.crypto
+                        .sha256(this.transaction.public_key +
                         this.transaction.time +
                         this.transaction.rid +
                         this.transaction.relationship +
@@ -229,12 +241,14 @@ define(["require", "exports"], function (require, exports) {
                         this.transaction.requested_rid +
                         inputs_hashes_concat +
                         outputs_hashes_concat +
-                        version).toString('hex');
+                        version)
+                        .toString("hex");
                 }
                 else if (this.info.relationship.wif) {
                     // recovery
                     this.transaction.relationship = this.crypt.shared_encrypt(this.info.shared_secret, JSON.stringify(this.info.relationship));
-                    hash = foobar.bitcoin.crypto.sha256(this.transaction.public_key +
+                    hash = foobar.bitcoin.crypto
+                        .sha256(this.transaction.public_key +
                         this.transaction.time +
                         this.transaction.rid +
                         this.transaction.relationship +
@@ -243,17 +257,20 @@ define(["require", "exports"], function (require, exports) {
                         this.transaction.requested_rid +
                         inputs_hashes_concat +
                         outputs_hashes_concat +
-                        version).toString('hex');
+                        version)
+                        .toString("hex");
                 }
                 else if (this.info.relationship[this.identity.collections.GROUP]) {
                     // join or create group
                     if (this.info.relationship[this.identity.collections.GROUP].parent) {
-                        this.transaction.relationship = this.crypt.shared_encrypt(this.info.relationship[this.identity.collections.GROUP].parent.username_signature, JSON.stringify(this.info.relationship));
+                        this.transaction.relationship = this.crypt.shared_encrypt(this.info.relationship[this.identity.collections.GROUP].parent
+                            .username_signature, JSON.stringify(this.info.relationship));
                     }
                     else {
                         this.transaction.relationship = this.crypt.encrypt(this.info.relationship);
                     }
-                    hash = foobar.bitcoin.crypto.sha256(this.transaction.public_key +
+                    hash = foobar.bitcoin.crypto
+                        .sha256(this.transaction.public_key +
                         this.transaction.time +
                         this.transaction.rid +
                         this.transaction.relationship +
@@ -262,12 +279,14 @@ define(["require", "exports"], function (require, exports) {
                         this.transaction.requested_rid +
                         inputs_hashes_concat +
                         outputs_hashes_concat +
-                        version).toString('hex');
+                        version)
+                        .toString("hex");
                 }
                 else if (this.info.relationship[this.identity.collections.MARKET]) {
                     // join or create market
                     this.transaction.relationship = this.crypt.encrypt(this.info.relationship);
-                    hash = foobar.bitcoin.crypto.sha256(this.transaction.public_key +
+                    hash = foobar.bitcoin.crypto
+                        .sha256(this.transaction.public_key +
                         this.transaction.time +
                         this.transaction.rid +
                         this.transaction.relationship +
@@ -276,7 +295,8 @@ define(["require", "exports"], function (require, exports) {
                         this.transaction.requested_rid +
                         inputs_hashes_concat +
                         outputs_hashes_concat +
-                        version).toString('hex');
+                        version)
+                        .toString("hex");
                 }
                 else if (this.info.relationship[this.identity.collections.AFFILIATE] ||
                     this.info.relationship[this.identity.collections.BID] ||
@@ -287,7 +307,8 @@ define(["require", "exports"], function (require, exports) {
                     this.info.relationship[this.identity.collections.WEB_SIGNIN_REQUEST] ||
                     this.info.relationship[this.identity.collections.WEB_SIGNIN_RESPONSE]) {
                     this.transaction.relationship = this.crypt.shared_encrypt(this.info.shared_secret, JSON.stringify(this.info.relationship));
-                    hash = foobar.bitcoin.crypto.sha256(this.transaction.public_key +
+                    hash = foobar.bitcoin.crypto
+                        .sha256(this.transaction.public_key +
                         this.transaction.time +
                         this.transaction.rid +
                         this.transaction.relationship +
@@ -296,13 +317,15 @@ define(["require", "exports"], function (require, exports) {
                         this.transaction.requested_rid +
                         inputs_hashes_concat +
                         outputs_hashes_concat +
-                        version).toString('hex');
+                        version)
+                        .toString("hex");
                 }
                 else if (this.info.relationship[this.identity.collections.WEB_PAGE] ||
                     this.info.relationship[this.identity.collections.ASSET]) {
                     // mypage
                     this.transaction.relationship = this.crypt.encrypt(this.info.relationship);
-                    hash = foobar.bitcoin.crypto.sha256(this.transaction.public_key +
+                    hash = foobar.bitcoin.crypto
+                        .sha256(this.transaction.public_key +
                         this.transaction.time +
                         this.transaction.rid +
                         this.transaction.relationship +
@@ -311,20 +334,23 @@ define(["require", "exports"], function (require, exports) {
                         this.transaction.requested_rid +
                         inputs_hashes_concat +
                         outputs_hashes_concat +
-                        version).toString('hex');
+                        version)
+                        .toString("hex");
                 }
                 else {
                     //straight transaction
-                    hash = foobar.bitcoin.crypto.sha256(this.transaction.public_key +
+                    hash = foobar.bitcoin.crypto
+                        .sha256(this.transaction.public_key +
                         this.transaction.time +
-                        (this.transaction.rid || '') +
-                        (this.transaction.relationship || '') +
+                        (this.transaction.rid || "") +
+                        (this.transaction.relationship || "") +
                         this.transaction.fee.toFixed(8) +
-                        (this.transaction.requester_rid || '') +
-                        (this.transaction.requested_rid || '') +
+                        (this.transaction.requester_rid || "") +
+                        (this.transaction.requested_rid || "") +
                         inputs_hashes_concat +
                         outputs_hashes_concat +
-                        version).toString('hex');
+                        version)
+                        .toString("hex");
                 }
                 this.transaction.hash = hash;
                 var attempt = this.txnattempts.pop();
@@ -340,16 +366,24 @@ define(["require", "exports"], function (require, exports) {
         }
         sendTransaction(txn = null, transactionUrlOverride = undefined) {
             return new Promise((resolve, reject) => {
-                var url = '';
-                url = (transactionUrlOverride || this.settings.webServiceURL + '/transaction') + '?username_signature=' + this.identity.identity.username_signature + '&to=' + this.key.getAddress() + '&username=' + this.username;
+                var url = "";
+                url =
+                    (transactionUrlOverride ||
+                        this.settings.webServiceURL + "/transaction") +
+                        "?username_signature=" +
+                        this.identity.identity.username_signature +
+                        "&to=" +
+                        this.key.getAddress() +
+                        "&username=" +
+                        this.username;
                 this.post(url, txn, resolve, reject);
             });
         }
         post(url, txn, resolve, reject) {
             return fetch(url, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify(txn),
             })

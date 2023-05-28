@@ -4,7 +4,7 @@ define(["require", "exports"], function (require, exports) {
     exports.Settings = void 0;
     class Settings {
         constructor() {
-            this.webServiceURL = 'http://localhost:8001';
+            this.webServiceURL = "http://localhost:8001";
         }
     }
     exports.Settings = Settings;
