@@ -49,7 +49,7 @@ export declare class Graph {
         filename: any;
         rid: string;
     };
-    generateMessage({ identity, recipient, collection, message }: any): Promise<any>;
+    generateMessage({ identity, recipient, collection, message, rid, }: any): Promise<any>;
     _sendMail(params: any): Promise<void>;
     addFriend(identity: IdentityI.Identity, rid?: string, requester_rid?: string, requested_rid?: string): any;
     getFriendRequests(rid?: null): Promise<unknown>;
@@ -121,6 +121,8 @@ export declare namespace GraphI {
         value?: number;
         version?: number;
         to?: string;
+        never_expire?: boolean;
+        private?: boolean;
     }
     type TxnKey = keyof GraphI.Txn;
     type TxnParamsKey = keyof GraphI.TxnParams;

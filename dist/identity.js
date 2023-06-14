@@ -29,6 +29,7 @@ define(["require", "exports", "noble-ripemd160", "bs58"], function (require, exp
                 CHAT_FILE: "chat_file",
                 CONTRACT: "contract",
                 CONTRACT_SIGNED: "contract_signed",
+                FILE_REQUEST: "file_request",
                 GROUP: "group",
                 GROUP_CALENDAR: "group_event_meeting",
                 GROUP_CHAT: "group_chat",

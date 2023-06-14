@@ -263,9 +263,11 @@ define(["require", "exports"], function (require, exports) {
                 rid: item.rid,
             };
         }
-        generateMessage({ identity, recipient, collection, message }) {
+        generateMessage({ identity, recipient, collection, message, rid, }) {
             return __awaiter(this, void 0, void 0, function* () {
-                const rid = this.generateRid(identity.username_signature, recipient.username_signature);
+                if (!rid) {
+                    const rid = this.generateRid(identity.username_signature, recipient.username_signature);
+                }
                 const requester_rid = this.generateRid(identity.username_signature, identity.username_signature, collection);
                 const requested_rid = this.generateRid(recipient.username_signature, recipient.username_signature, collection);
                 let send = false;
@@ -278,7 +280,7 @@ define(["require", "exports"], function (require, exports) {
                         requested_rid: requested_rid,
                         shared_secret: recipient.username_signature,
                     };
-                    info.relationship[collection] = Object.assign({ sender: identity }, message);
+                    info.relationship.data = Object.assign({ sender: identity }, message);
                     return yield this.transaction.generateTransaction(info);
                 }
                 else {
@@ -302,7 +304,7 @@ define(["require", "exports"], function (require, exports) {
                             requester_rid: requester_rid,
                             requested_rid: requested_rid,
                         };
-                        info.relationship[collection] = Object.assign({}, message);
+                        info.relationship.data = Object.assign({}, message);
                         return yield this.transaction.generateTransaction(info);
                     }
                 }

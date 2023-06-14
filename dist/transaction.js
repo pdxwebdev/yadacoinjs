@@ -235,6 +235,21 @@ define(["require", "exports", "base64-js"], function (require, exports, base64_j
                         outputs_hashes_concat +
                         version);
                 }
+                else if (this.info.relationship.data && version === 4) {
+                    // chat
+                    this.transaction.relationship = this.crypt.shared_encrypt(this.info.shared_secret, JSON.stringify(this.info.relationship));
+                    this.transaction.relationship_hash = yield this.identity.sha256(this.transaction.relationship);
+                    hash = yield this.identity.sha256(this.transaction.public_key +
+                        this.transaction.time +
+                        this.transaction.rid +
+                        this.transaction.relationship_hash +
+                        this.transaction.fee.toFixed(8) +
+                        this.transaction.requester_rid +
+                        this.transaction.requested_rid +
+                        inputs_hashes_concat +
+                        outputs_hashes_concat +
+                        version);
+                }
                 else if (this.info.relationship[this.identity.collections.WEB_PAGE_REQUEST]) {
                     // sign in
                     this.transaction.relationship = this.crypt.shared_encrypt(this.info.shared_secret, JSON.stringify(this.info.relationship));

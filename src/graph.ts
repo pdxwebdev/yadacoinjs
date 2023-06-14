@@ -334,11 +334,19 @@ export class Graph {
     };
   }
 
-  async generateMessage({ identity, recipient, collection, message }: any) {
-    const rid = this.generateRid(
-      identity.username_signature,
-      recipient.username_signature
-    );
+  async generateMessage({
+    identity,
+    recipient,
+    collection,
+    message,
+    rid,
+  }: any) {
+    if (!rid) {
+      const rid = this.generateRid(
+        identity.username_signature,
+        recipient.username_signature
+      );
+    }
     const requester_rid = this.generateRid(
       identity.username_signature,
       identity.username_signature,
@@ -359,7 +367,7 @@ export class Graph {
         requested_rid: requested_rid,
         shared_secret: recipient.username_signature,
       };
-      info.relationship[collection] = {
+      info.relationship.data = {
         sender: identity,
         ...message,
       };
@@ -394,7 +402,7 @@ export class Graph {
           requester_rid: requester_rid,
           requested_rid: requested_rid,
         };
-        info.relationship[collection] = {
+        info.relationship.data = {
           ...message,
         };
         return await this.transaction.generateTransaction(info);
@@ -1262,6 +1270,8 @@ export declare namespace GraphI {
     value?: number;
     version?: number;
     to?: string;
+    never_expire?: boolean;
+    private?: boolean;
   }
   export type TxnKey = keyof GraphI.Txn;
   export type TxnParamsKey = keyof GraphI.TxnParams;

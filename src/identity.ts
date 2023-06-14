@@ -5,7 +5,6 @@ import { Settings } from "./settings";
 
 declare var foobar: any;
 declare var forge: any;
-declare var Base64: any;
 
 export class Identity {
   identity: any = {};
@@ -39,6 +38,7 @@ export class Identity {
     CHAT_FILE: "chat_file",
     CONTRACT: "contract",
     CONTRACT_SIGNED: "contract_signed",
+    FILE_REQUEST: "file_request",
     GROUP: "group",
     GROUP_CALENDAR: "group_event_meeting",
     GROUP_CHAT: "group_chat",
